@@ -64,26 +64,26 @@ def pdfurl2ocr(url):
     # Store all the pages of the PDF in a variable
     image_file_list = []
     text = ""
-    with TemporaryDirectory() as tempdir:
-        pdf_pages = convert_from_path(PDF_file, 500)
-        # Iterate through all the pages stored above
-        for page_enumeration, page in enumerate(pdf_pages, start=1):
-            # enumerate() "counts" the pages for us.
+    # with TemporaryDirectory() as tempdir:
+    pdf_pages = convert_from_path(PDF_file, 500)
+    # Iterate through all the pages stored above
+    for page_enumeration, page in enumerate(pdf_pages, start=1):
+        # enumerate() "counts" the pages for us.
 
-            # Create a file name to store the image
-            filename = f"{tempdir}\page_{page_enumeration:03}.jpg"
+        # Create a file name to store the image
+        filename = os.path.join(uploadpath,'page_'+str(page_enumeration)+'.jpg')
 
-            # Declaring filename for each page of PDF as JPG
-            # For each page, filename will be:
-            # PDF page 1 -> page_001.jpg
-            # PDF page 2 -> page_002.jpg
-            # PDF page 3 -> page_003.jpg
-            # ....
-            # PDF page n -> page_00n.jpg
+        # Declaring filename for each page of PDF as JPG
+        # For each page, filename will be:
+        # PDF page 1 -> page_001.jpg
+        # PDF page 2 -> page_002.jpg
+        # PDF page 3 -> page_003.jpg
+        # ....
+        # PDF page n -> page_00n.jpg
 
-            # Save the image of the page in system
-            page.save(filename, "JPEG")
-            image_file_list.append(filename)
+        # Save the image of the page in system
+        page.save(filename, "JPEG")
+        image_file_list.append(filename)
 
     # Iterate from 1 to total number of pages
     for image_file in image_file_list:
@@ -99,19 +99,19 @@ def docxurl2ocr(url):
     # Store all the pages of the PDF in a variable
     image_file_list = []
     text = ""
-    with TemporaryDirectory() as tempdir:
-        # Iterate through all the pages stored above
-        for page_enumeration, image in enumerate(images):
-            # enumerate() "counts" the pages for us.
-            img = z.open(image).read()
-            # Create a file name to store the image
-            filename = os.path.basename(image)
-            filepath = os.path.join(tempdir, filename)
-            #             print(filename)
-            # Save the image of the page in system
-            f = open(filepath, "wb")
-            f.write(img)
-            image_file_list.append(filepath)
+    # with TemporaryDirectory() as tempdir:
+    # Iterate through all the pages stored above
+    for page_enumeration, image in enumerate(images):
+        # enumerate() "counts" the pages for us.
+        img = z.open(image).read()
+        # Create a file name to store the image
+        filename = os.path.basename(image)
+        filepath = os.path.join(uploadpath, filename)
+        #             print(filename)
+        # Save the image of the page in system
+        f = open(filepath, "wb")
+        f.write(img)
+        image_file_list.append(filepath)
 
     # Iterate from 1 to total number of pages
     for image_file in image_file_list:
