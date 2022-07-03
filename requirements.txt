@@ -3,3 +3,4 @@ paddlepaddle
 pdfplumber
 python-docx
 pandas
+pdf2image
