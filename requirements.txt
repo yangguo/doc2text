@@ -1,0 +1,5 @@
+paddleocr
+paddlepaddle
+pdfplumber
+python-docx
+pandas

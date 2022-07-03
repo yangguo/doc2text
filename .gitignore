@@ -142,3 +142,9 @@ dmypy.json
 .flake8
 .isort.cfg
 .markdownlint.yaml
+
+# ignore files
+*.doc
+*.docx
+*.pdf
+*.wps
