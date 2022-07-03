@@ -58,8 +58,10 @@ def main():
         if convert_button:
             dfnew = extract_text(df)
             st.table(dfnew)
-
-            # st.download_button(dfnew.to_csv(), "文件转换结果.csv")
+            # add download button to left
+            st.download_button(
+                "下载结果", data=dfnew.to_csv().encode("utf_8_sig"), file_name="转换结果.csv"
+            )
 
 
 if __name__ == "__main__":

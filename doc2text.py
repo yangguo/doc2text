@@ -71,7 +71,7 @@ def pdfurl2ocr(url):
         # enumerate() "counts" the pages for us.
 
         # Create a file name to store the image
-        filename = os.path.join(uploadpath,'page_'+str(page_enumeration)+'.jpg')
+        filename = os.path.join(uploadpath, "page_" + str(page_enumeration) + ".jpg")
 
         # Declaring filename for each page of PDF as JPG
         # For each page, filename will be:
@@ -88,6 +88,9 @@ def pdfurl2ocr(url):
     # Iterate from 1 to total number of pages
     for image_file in image_file_list:
         text += paddleocr2text(image_file)
+        # delete image file
+        os.remove(image_file)
+
     return text
 
 
@@ -116,6 +119,9 @@ def docxurl2ocr(url):
     # Iterate from 1 to total number of pages
     for image_file in image_file_list:
         text += paddleocr2text(image_file)
+        # delete image file
+        os.remove(image_file)
+
     return text
 
 
@@ -268,11 +274,11 @@ def convert_uploadfiles(txtls):
                     if text2 == "":
                         text = docxurl2ocr(datapath)
 
-            #         elif ext.lower()=='.pdf':
-            #             text=pdfurl2txt(datapath)
-            #             text=text.translate(str.maketrans('', '', ' \n\t\r\s'))
-            #             if text=='':
-            #                 text=pdfurl2ocr(datapath)
+            elif ext.lower() == ".pdf":
+                text = pdfurl2txt(datapath)
+                text1 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
+                if text1 == "":
+                    text = pdfurl2ocr(datapath)
             else:
                 text = np.nan
         except Exception as e:
