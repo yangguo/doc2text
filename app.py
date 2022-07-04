@@ -21,7 +21,7 @@ def main():
 
         uploaded_file_ls = st.file_uploader(
             "选择新文件上传",
-            type=["docx", "pdf", "doc", "wps"],
+            type=["docx", "pdf", "doc", "wps", "bmp", "png", "jpg", "jpeg", "tiff"],
             accept_multiple_files=True,
             help="选择文件上传",
         )

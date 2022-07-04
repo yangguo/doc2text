@@ -5,7 +5,6 @@ import re
 import subprocess
 import zipfile
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
 import docx
 import numpy as np
@@ -73,14 +72,6 @@ def pdfurl2ocr(url):
         # Create a file name to store the image
         filename = os.path.join(uploadpath, "page_" + str(page_enumeration) + ".jpg")
 
-        # Declaring filename for each page of PDF as JPG
-        # For each page, filename will be:
-        # PDF page 1 -> page_001.jpg
-        # PDF page 2 -> page_002.jpg
-        # PDF page 3 -> page_003.jpg
-        # ....
-        # PDF page n -> page_00n.jpg
-
         # Save the image of the page in system
         page.save(filename, "JPEG")
         image_file_list.append(filename)
@@ -125,6 +116,12 @@ def docxurl2ocr(url):
     return text
 
 
+def picurl2ocr(url):
+    text = ""
+    text += paddleocr2text(url)
+    return text
+
+
 def find_files(path: str, glob_pat: str, ignore_case: bool = False):
     rule = (
         re.compile(fnmatch.translate(glob_pat), re.IGNORECASE)
@@ -155,7 +152,7 @@ def docxconvertion():
 
     for filepath in docfiles:
         st.info(filepath)
-        filename = os.path.basename(filepath)
+        # filename = os.path.basename(filepath)
         #     print(filename)
         #         output = subprocess.check_output(["soffice","--headless","--convert-to","docx",file,"--outdir",dest])
         subprocess.call(
@@ -172,7 +169,7 @@ def docxconvertion():
 
     for filepath in wpsfiles:
         st.info(filepath)
-        filename = os.path.basename(filepath)
+        # filename = os.path.basename(filepath)
         #     print(filename)
         #         output = subprocess.check_output(["soffice","--headless","--convert-to","docx",file,"--outdir",dest])
         subprocess.call(
@@ -196,7 +193,7 @@ def docxconvertion():
 
     for filepath in docxfiles:
         st.info(filepath)
-        filename = os.path.basename(filepath)
+        # filename = os.path.basename(filepath)
         #     print(filename)
         #         output = subprocess.check_output(["soffice","--headless","--convert-to","docx",file,"--outdir",dest])
         subprocess.call(
@@ -279,6 +276,15 @@ def convert_uploadfiles(txtls):
                 text1 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
                 if text1 == "":
                     text = pdfurl2ocr(datapath)
+
+            elif (
+                ext.lower() == ".png"
+                or ext.lower() == ".jpg"
+                or ext.lower() == ".jpeg"
+                or ext.lower() == ".bmp"
+                or ext.lower() == ".tiff"
+            ):
+                text = picurl2ocr(datapath)
             else:
                 text = np.nan
         except Exception as e:
