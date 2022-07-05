@@ -16,7 +16,6 @@ from PIL import Image
 
 Image.MAX_IMAGE_PIXELS = None
 
-uploadpath = "uploads/"
 
 ocr = PaddleOCR(use_angle_cls=True, lang="ch")
 
@@ -61,7 +60,7 @@ def paddleocr2text(image_file):
     return txt
 
 
-def pdfurl2ocr(url):
+def pdfurl2ocr(url, uploadpath):
     PDF_file = Path(url)
     # Store all the pages of the PDF in a variable
     image_file_list = []
@@ -88,7 +87,7 @@ def pdfurl2ocr(url):
     return text
 
 
-def docxurl2ocr(url):
+def docxurl2ocr(url, uploadpath):
     z = zipfile.ZipFile(url)
     all_files = z.namelist()
     images = sorted(filter(lambda x: x.startswith("word/media/"), all_files))
@@ -136,13 +135,13 @@ def find_files(path: str, glob_pat: str, ignore_case: bool = False):
     ]
 
 
-def save_uploadedfile(uploadedfile):
+def save_uploadedfile(uploadedfile, uploadpath):
     with open(os.path.join(uploadpath, uploadedfile.name), "wb") as f:
         f.write(uploadedfile.getbuffer())
     return st.success("上传文件:{} 成功。".format(uploadedfile.name))
 
 
-def docxconvertion():
+def docxconvertion(uploadpath):
 
     docdest = os.path.join(uploadpath, "doc")
     wpsdest = os.path.join(uploadpath, "wps")
@@ -212,7 +211,7 @@ def docxconvertion():
         )
 
 
-def get_uploadfiles():
+def get_uploadfiles(uploadpath):
     fileslist = glob.glob(uploadpath + "/*.*", recursive=True)
     basenamels = []
     for file in fileslist:
@@ -220,8 +219,8 @@ def get_uploadfiles():
     return basenamels
 
 
-def remove_uploadfiles():
-    files = glob.glob(uploadpath + "/*.*", recursive=True)
+def remove_uploadfiles(uploadpath):
+    files = glob.glob(uploadpath + "**/*.*", recursive=True)
 
     for f in files:
         try:
@@ -231,7 +230,7 @@ def remove_uploadfiles():
 
 
 # convert all files in uploadfolder to text
-def convert_uploadfiles(txtls):
+def convert_uploadfiles(txtls, uploadpath):
 
     resls = []
     for file in txtls:
@@ -248,7 +247,7 @@ def convert_uploadfiles(txtls):
                 text = docxurl2txt(datapath)
                 text1 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
                 if text1 == "":
-                    text = docxurl2ocr(datapath)
+                    text = docxurl2ocr(datapath, uploadpath)
 
             elif ext.lower() == ".wps":
                 datapath = uploadpath + "wps/" + base + ".docx"
@@ -256,7 +255,7 @@ def convert_uploadfiles(txtls):
                 text = docxurl2txt(datapath)
                 text1 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
                 if text1 == "":
-                    text = docxurl2ocr(datapath)
+                    text = docxurl2ocr(datapath, uploadpath)
 
             #         elif ext.lower()=='doc.docx':
             #             datapath=os.path.join(filepath,'docc',file)
@@ -272,13 +271,13 @@ def convert_uploadfiles(txtls):
                     text = docxurl2txt(datapath)
                     text2 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
                     if text2 == "":
-                        text = docxurl2ocr(datapath)
+                        text = docxurl2ocr(datapath, uploadpath)
 
             elif ext.lower() == ".pdf":
                 text = pdfurl2txt(datapath)
                 text1 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
                 if text1 == "":
-                    text = pdfurl2ocr(datapath)
+                    text = pdfurl2ocr(datapath, uploadpath)
 
             elif (
                 ext.lower() == ".png"
@@ -298,8 +297,8 @@ def convert_uploadfiles(txtls):
 
 
 # extract text from files
-def extract_text(df):
+def extract_text(df, uploadpath):
     txtls = df["文件"].tolist()
-    resls = convert_uploadfiles(txtls)
+    resls = convert_uploadfiles(txtls, uploadpath)
     df["文本"] = resls
     return df

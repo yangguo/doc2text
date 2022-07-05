@@ -9,6 +9,8 @@ from doc2text import (
     save_uploadedfile,
 )
 
+uploadpath = "uploads/"
+
 
 def main():
     st.subheader("文档转文本")
@@ -28,33 +30,33 @@ def main():
 
         for uploaded_file in uploaded_file_ls:
             if uploaded_file is not None:
-                save_uploadedfile(uploaded_file)
+                save_uploadedfile(uploaded_file, uploadpath)
 
         # button for remove files
         remove_button = st.sidebar.button("文档删除")
         if remove_button:
-            remove_uploadfiles()
+            remove_uploadfiles(uploadpath)
         # display uploaded files
-        filels = get_uploadfiles()
+        filels = get_uploadfiles(uploadpath)
         # convert files to df
         df = pd.DataFrame({"文件": filels})
         st.write(df)
 
     elif menu == "文本抽取":
         # display uploaded files
-        filels = get_uploadfiles()
+        filels = get_uploadfiles(uploadpath)
         # convert files to df
         df = pd.DataFrame({"文件": filels})
         st.write(df)
         # button for convert
         convert_button = st.sidebar.button("word格式转换")
         if convert_button:
-            docxconvertion()
+            docxconvertion(uploadpath)
 
         # button for convert
         convert_button = st.sidebar.button("文本抽取")
         if convert_button:
-            dfnew = extract_text(df)
+            dfnew = extract_text(df, uploadpath)
             st.table(dfnew)
             # add download button to left
             st.download_button(
