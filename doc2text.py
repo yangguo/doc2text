@@ -242,7 +242,7 @@ def convert_uploadfiles(txtls, uploadpath):
             base, ext = os.path.splitext(file)
 
             if ext.lower() == ".doc":
-                datapath = uploadpath + "doc/" + base + ".docx"
+                datapath = os.path.join(uploadpath, "doc", base + ".docx")
                 st.info(datapath)
                 text = docxurl2txt(datapath)
                 text1 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
@@ -250,7 +250,7 @@ def convert_uploadfiles(txtls, uploadpath):
                     text = docxurl2ocr(datapath, uploadpath)
 
             elif ext.lower() == ".wps":
-                datapath = uploadpath + "wps/" + base + ".docx"
+                datapath = os.path.join(uploadpath, "wps", base + ".docx")
                 st.info(datapath)
                 text = docxurl2txt(datapath)
                 text1 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
