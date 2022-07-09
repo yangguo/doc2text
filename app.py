@@ -2,7 +2,9 @@ import pandas as pd
 import streamlit as st
 
 from doc2text import (
+    convert_table2zip,
     docxconvertion,
+    extract_table,
     extract_text,
     get_uploadfiles,
     remove_uploadfiles,
@@ -15,7 +17,7 @@ uploadpath = "uploads/"
 def main():
     st.subheader("文档转文本")
 
-    menuls = ["文档上传", "文本抽取"]
+    menuls = ["文档上传", "文本抽取", "表格识别"]
 
     menu = st.sidebar.selectbox("选择菜单", menuls)
 
@@ -38,16 +40,24 @@ def main():
             remove_uploadfiles(uploadpath)
         # display uploaded files
         filels = get_uploadfiles(uploadpath)
-        # convert files to df
-        df = pd.DataFrame({"文件": filels})
-        st.write(df)
+        if len(filels) > 0:
+            # convert files to df
+            df = pd.DataFrame({"文件": filels})
+            st.write(df)
+        else:
+            st.error("请上传文档")
+            st.stop()
 
     elif menu == "文本抽取":
         # display uploaded files
         filels = get_uploadfiles(uploadpath)
-        # convert files to df
-        df = pd.DataFrame({"文件": filels})
-        st.write(df)
+        if len(filels) > 0:
+            # convert files to df
+            df = pd.DataFrame({"文件": filels})
+            st.write(df)
+        else:
+            st.error("请上传文档")
+            st.stop()
         # button for convert
         convert_button = st.sidebar.button("word格式转换")
         if convert_button:
@@ -62,6 +72,25 @@ def main():
             st.download_button(
                 "下载结果", data=dfnew.to_csv().encode("utf_8_sig"), file_name="转换结果.csv"
             )
+
+    elif menu == "表格识别":
+        # display uploaded files
+        filels = get_uploadfiles(uploadpath)
+        if len(filels) > 0:
+            # convert files to df
+            df = pd.DataFrame({"文件": filels})
+            st.write(df)
+        else:
+            st.error("请上传文档")
+            st.stop()
+
+        # button for convert
+        convert_table = st.sidebar.button("表格识别")
+        if convert_table:
+            tablels = extract_table(df, uploadpath)
+            downloadname = convert_table2zip(tablels, uploadpath)
+            with open(downloadname, "rb") as f:
+                st.download_button("下载结果", f, file_name="download.zip")
 
 
 if __name__ == "__main__":
