@@ -247,7 +247,7 @@ def convert_uploadfiles(txtls, uploadpath):
                 datapath = os.path.join(uploadpath, "doc", base + ".docx")
                 st.info(datapath)
                 text = docxurl2txt(datapath)
-                text1 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
+                text1 = clean_string(text)
                 if text1 == "":
                     text = docxurl2ocr(datapath, uploadpath)
 
@@ -255,7 +255,7 @@ def convert_uploadfiles(txtls, uploadpath):
                 datapath = os.path.join(uploadpath, "wps", base + ".docx")
                 st.info(datapath)
                 text = docxurl2txt(datapath)
-                text1 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
+                text1 = clean_string(text)
                 if text1 == "":
                     text = docxurl2ocr(datapath, uploadpath)
 
@@ -266,19 +266,22 @@ def convert_uploadfiles(txtls, uploadpath):
             elif ext.lower() == ".docx":
                 st.info(datapath)
                 text = docxurl2txt(datapath)
-                text1 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
+                text1 = clean_string(text)
                 if text1 == "":
                     datapath = os.path.join(uploadpath, "docx", file)
                     st.info(datapath)
                     text = docxurl2txt(datapath)
-                    text2 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
+                    text2 = clean_string(text)
                     if text2 == "":
                         text = docxurl2ocr(datapath, uploadpath)
 
             elif ext.lower() == ".pdf":
                 text = pdfurl2txt(datapath)
-                text1 = text.translate(str.maketrans("", "", r" \n\t\r\s"))
+                st.write('result:',text)
+                print(text)
+                text1 = clean_string(text)
                 if text1 == "":
+                    st.write('ocr')
                     text = pdfurl2ocr(datapath, uploadpath)
 
             elif (
@@ -504,3 +507,8 @@ def pdfurl2table(url, uploadpath):
         os.remove(image_file)
 
     return resls
+
+
+# remove all spaces in string
+def clean_string(string):
+    return re.sub(r"\s+", "", string)
