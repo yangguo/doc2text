@@ -277,11 +277,8 @@ def convert_uploadfiles(txtls, uploadpath):
 
             elif ext.lower() == ".pdf":
                 text = pdfurl2txt(datapath)
-                st.write('result:',text)
-                print(text)
                 text1 = clean_string(text)
                 if text1 == "":
-                    st.write('ocr')
                     text = pdfurl2ocr(datapath, uploadpath)
 
             elif (
@@ -424,9 +421,13 @@ def convert_tablefiles(txtls, uploadpath):
             base, ext = os.path.splitext(file)
 
             if ext.lower() == ".pdf":
-                st.info("正在转换：" + file)
-                pdfls = pdfurl2table(datapath, uploadpath)
-                resls += pdfls
+                st.info(file)
+                pdfls = pdf2table(datapath, uploadpath)
+                if len(pdfls) > 0:
+                    resls += pdfls
+                else:
+                    pdfls = pdfocr2table(datapath, uploadpath)
+                    resls += pdfls
             elif (
                 ext.lower() == ".png"
                 or ext.lower() == ".jpg"
@@ -470,7 +471,7 @@ def convert_table2zip(filels, uploadpath):
     return downloadname
 
 
-def pdfurl2table(url, uploadpath):
+def pdfocr2table(url, uploadpath):
     PDF_file = Path(url)
     # get url basename
     pdfname = os.path.basename(url).split(".")[0]
@@ -512,3 +513,25 @@ def pdfurl2table(url, uploadpath):
 # remove all spaces in string
 def clean_string(string):
     return re.sub(r"\s+", "", string)
+
+
+def pdf2table(url, uploadpath):
+    # get url basename
+    pdfname = os.path.basename(url).split(".")[0]
+    dfls = []
+    with pdfplumber.open(url) as pdf:
+        for i, page in enumerate(pdf.pages):
+            tables = page.extract_tables()
+            for j, table in enumerate(tables):
+                if table is not None:
+                    tabledf = pd.DataFrame(table)
+                    # display results
+                    st.table(tabledf)
+                    # Create a file name to store the image
+                    filename = os.path.join(
+                        uploadpath,
+                        pdfname + "-page_" + str(i) + "_no_" + str(j) + ".csv",
+                    )
+                    tabledf.to_csv(filename, index=False)
+                    dfls.append(filename)
+    return dfls
