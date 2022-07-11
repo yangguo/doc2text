@@ -290,7 +290,7 @@ def convert_uploadfiles(txtls, uploadpath):
             ):
                 text = picurl2ocr(datapath)
             else:
-                text = np.nan
+                text = ""
         except Exception as e:
             st.error(str(e))
             text = ""
@@ -463,11 +463,31 @@ def extract_table(df, uploadpath):
 
 
 # convert dataframe to csv zipfile
+def convert_df2zip(df, uploadpath):
+    filels = df["文件"].tolist()
+    textls = df["文本"].tolist()
+    for file, text in zip(filels, textls):
+        base, ext = os.path.splitext(file)
+        if ext.lower() != ".zip":
+            filepath = os.path.join(uploadpath, base + ".txt")
+            with open(filepath, "w") as f:
+                f.write(text)
+    # get text file list in uploadpath
+    txtfilels = glob.glob(os.path.join(uploadpath, "*.txt"))
+
+    downloadname = os.path.join(uploadpath, "table_data.zip")
+    with zipfile.ZipFile(downloadname, "w") as zf:
+        for txtfile in txtfilels:
+            zf.write(txtfile, os.path.basename(txtfile))
+    return downloadname
+
+
+# convert table files to csv zipfile
 def convert_table2zip(filels, uploadpath):
     downloadname = os.path.join(uploadpath, "table_data.zip")
     with zipfile.ZipFile(downloadname, "w") as zf:
         for file in filels:
-            zf.write(file)
+            zf.write(file, os.path.basename(file))
     return downloadname
 
 

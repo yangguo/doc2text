@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 
 from doc2text import (
+    convert_df2zip,
     convert_table2zip,
     docxconvertion,
     extract_table,
@@ -68,10 +69,10 @@ def main():
         if convert_button:
             dfnew = extract_text(df, uploadpath)
             st.table(dfnew)
-            # add download button to left
-            st.download_button(
-                "下载结果", data=dfnew.to_csv().encode("utf_8_sig"), file_name="转换结果.csv"
-            )
+            # convert df to zipfile
+            downloadname = convert_df2zip(dfnew, uploadpath)
+            with open(downloadname, "rb") as f:
+                st.download_button("下载结果", f, file_name="download.zip")
 
     elif menu == "表格识别":
         # display uploaded files

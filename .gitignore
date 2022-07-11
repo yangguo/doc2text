@@ -136,6 +136,7 @@ dmypy.json
 .vscode
 **/artifacts
 *.png
+uploads
 
 # ignore trunk files
 .trunk
