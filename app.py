@@ -1,3 +1,5 @@
+import datetime
+
 import pandas as pd
 import streamlit as st
 
@@ -39,6 +41,13 @@ def main():
         remove_button = st.sidebar.button("文档删除")
         if remove_button:
             remove_uploadfiles(uploadpath)
+
+        # get current time
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # perform remove operation when the time is on 0000
+        if current_time[-8:] == "00:00:00":
+            remove_uploadfiles(uploadpath)
+
         # display uploaded files
         filels = get_uploadfiles(uploadpath)
         if len(filels) > 0:
