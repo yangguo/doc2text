@@ -1,12 +1,7 @@
-paddleocr
-paddlepaddle
 pdfplumber
 python-docx
 pandas
 pdf2image
-transformers
-torch
 Pillow
-opencv-python
 openai
 python-dotenv
